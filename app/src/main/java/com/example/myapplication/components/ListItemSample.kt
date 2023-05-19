@@ -22,10 +22,21 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun ListItemSample() {
 
+//    var list by remember {
+//        mutableStateOf(
+//            listOf(
+//                false, false, false, false, false
+//            )
+//        )
+//    }
     var list by remember {
         mutableStateOf(
             listOf(
-                false, false, false, false, false
+                ListItem("item 0", false),
+                ListItem("item 1", false),
+                ListItem("item 1", false),
+                ListItem("item 2", false),
+                ListItem("item 0", false)
             )
         )
     }
@@ -42,16 +53,20 @@ fun ListItemSample() {
                     Text(text = "ccc $rawIndex")
                 },
                 supportingText = {
-                    Text(text = "aaa")
+                    Text(text = listItem.title)
                 },
                 trailingContent = {
-                    Checkbox(checked = listItem, onCheckedChange = {
+                    Checkbox(checked = listItem.checked, onCheckedChange = {
                         list = list.mapIndexed { newIndex, listItem ->
-                            if (rawIndex == newIndex) {
-                                !listItem
+                            // 需把原本的listItem copy出來，才能改變屬性
+                            var newItem = listItem.copy()
+                            if (newIndex == rawIndex) {
+                                newItem.checked = !listItem.checked
                             } else {
-                                listItem
+                                newItem.checked = listItem.checked
                             }
+                            //要記得返回新的對象
+                            return@mapIndexed newItem
                         }
                         Log.i("====", "${list}")
                     })
@@ -64,6 +79,7 @@ fun ListItemSample() {
     }
 }
 
+data class ListItem(val title: String, var checked: Boolean) //checked會被更改，要設成var
 
 @Preview
 @Composable
